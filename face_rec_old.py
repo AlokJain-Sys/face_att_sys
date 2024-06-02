@@ -6,7 +6,6 @@ import redis
 # insight face
 from insightface.app import FaceAnalysis
 from sklearn.metrics import pairwise
-from insightface.model_zoo import get_model
 # time
 import time
 from datetime import datetime,date 
@@ -225,19 +224,16 @@ def rename_hash_key(old_key, new_key, hash_name='contact1:register'):
 
 
 
-# # Get the model (buffalo_sc in this case)
-# model = get_model('buffalo_sc', root='insightface_model')
 
-# # Check for GPU availability
-# cuda_available = model.check_backend('CUDAExecutionProvider')  
 
-# # Choose the provider based on availability
-# providers = ['CUDAExecutionProvider'] if cuda_available else ['CPUExecutionProvider']  
 
-# Configure Face Analysis with the selected provider
-faceapp = FaceAnalysis(name='buffalo_sc',root='insightface_model', providers=['CPUExecutionProvider'])
-faceapp.prepare(ctx_id = 0, det_size=(640,640), det_thresh = 0.5) 
 
+
+
+
+# configure face analysis
+faceapp = FaceAnalysis(name='buffalo_sc',root='insightface_model', providers = ['CPUExecutionProvider'])
+faceapp.prepare(ctx_id = 0, det_size=(640,640), det_thresh = 0.5)
 
 # ML Search Algorithm
 def ml_search_algorithm(dataframe,feature_column,test_vector,
@@ -276,11 +272,18 @@ def ml_search_algorithm(dataframe,feature_column,test_vector,
 ## Real Time Prediction
 #we need to save logs for every 1 mins
 class RealTimePred:
+    
     def __init__(self, rtsp_url="rtsp://admin:ab@123456@122.160.10.254:554/Streaming/Channels/101"):
         self.logs = dict(name=[], role=[], current_time=[])
         self.rtsp_url = rtsp_url  # Store the RTSP URL
         self.cap = cv2.VideoCapture(rtsp_url) # Get video feed from the RTSP URL
         self.cap.set(cv2.CAP_PROP_BITRATE, 1500000)
+    
+    def reset_dict(self):
+        self.logs = dict(name=[],role=[],current_time=[])
+    def __init__(self):
+        self.logs = dict(name=[],role=[],current_time=[])
+        
     def reset_dict(self):
         self.logs = dict(name=[],role=[],current_time=[])
         
@@ -312,12 +315,6 @@ class RealTimePred:
                             name_role=['Name','Role'],thresh=0.5):
         # step-1: find the time
         current_time = str(datetime.now())
-        ret, test_image = self.cap.read()  # Read frame from camera
-
-        # Error handling for camera failure
-        if not ret:
-            print("Error: Failed to capture frame from camera.")
-            return None 
         
         # step-1: take the test image and apply to insight face
         results = faceapp.get(test_image)

@@ -18,8 +18,7 @@ st.success("Data sucessfully retrived from Redis")
 # time 
 waitTime = 30 # time in sec
 setTime = time.time()
-rtsp_url = "rtsp://admin:ab@123456@122.160.10.254:554/Streaming/Channels/101"
-realtimepred = face_rec.RealTimePred(rtsp_url) # real time prediction class
+realtimepred = face_rec.RealTimePred() # real time prediction class
 
 # Real Time Prediction
 # streamlit webrtc
@@ -30,8 +29,9 @@ def video_frame_callback(frame):
     img = frame.to_ndarray(format="bgr24") # 3 dimension numpy array
     # operation that you can perform on the array
     pred_img = realtimepred.face_prediction(img,redis_face_db,
-                                        'facial_features',['Name','Role'])
-    
+                                        'facial_features',['Name','Role'],thresh=0.5)
+    rtsp_url = "rtsp://admin:ab@123456@122.160.10.254:554/Streaming/Channels/101"
+    realtimepred = face_rec.RealTimePred(rtsp_url)
     timenow = time.time()
     difftime = timenow - setTime
     if difftime >= waitTime:
@@ -46,9 +46,5 @@ def video_frame_callback(frame):
 webrtc_streamer(key="realtimePrediction", video_frame_callback=video_frame_callback,
     rtc_configuration={
             "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
-        },
-        media_stream_constraints={
-        "video": {"width": 640, "height": 480, "frameRate": {"ideal": 15, "max": 20}},"timeout": 60000,  # Reduce resolution and frame rate
-    }
+        }
     )
-
