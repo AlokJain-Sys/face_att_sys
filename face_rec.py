@@ -235,8 +235,8 @@ def rename_hash_key(old_key, new_key, hash_name='contact1:register'):
 # providers = ['CUDAExecutionProvider'] if cuda_available else ['CPUExecutionProvider']  
 
 # Configure Face Analysis with the selected provider
-faceapp = FaceAnalysis(name='buffalo_sc',root='insightface_model', providers=['CPUExecutionProvider'])
-faceapp.prepare(ctx_id = 0, det_size=(640,640), det_thresh = 0.5) 
+faceapp = FaceAnalysis(name='buffalo_sc', root='insightface_model', providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])
+faceapp.prepare(ctx_id=0, det_size=(640, 640), det_thresh=0.5)
 
 
 # ML Search Algorithm
@@ -275,12 +275,25 @@ def ml_search_algorithm(dataframe,feature_column,test_vector,
 
 ## Real Time Prediction
 #we need to save logs for every 1 mins
+
 class RealTimePred:
-    def __init__(self, rtsp_url="rtsp://admin:ab@123456@122.160.10.254:554/Streaming/Channels/101"):
+    
+    def __init__(self, rtsp_url="rtsp://admin:ab@123456@122.160.10.254/Streaming/Channels/101"):
         self.logs = dict(name=[], role=[], current_time=[])
-        self.rtsp_url = rtsp_url  # Store the RTSP URL
-        self.cap = cv2.VideoCapture(rtsp_url) # Get video feed from the RTSP URL
-        self.cap.set(cv2.CAP_PROP_BITRATE, 1500000)
+        self.rtsp_url = rtsp_url
+        self.cap = cv2.VideoCapture(rtsp_url, cv2.CAP_FFMPEG)
+        
+        # Error handling for camera connection
+        if not self.cap.isOpened():
+            raise RuntimeError(f"Error opening RTSP stream from {rtsp_url}")
+        
+        self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 3)    
+               
+    # def __init__(self, rtsp_url="rtsp://admin:ab@123456@122.160.10.254:554/Streaming/Channels/101"):
+    #     self.logs = dict(name=[], role=[], current_time=[])
+    #     self.rtsp_url = rtsp_url  # Store the RTSP URL
+    #     self.cap = cv2.VideoCapture(rtsp_url) # Get video feed from the RTSP URL
+    #     self.cap.set(cv2.CAP_PROP_BITRATE, 1500000)
     def reset_dict(self):
         self.logs = dict(name=[],role=[],current_time=[])
         
@@ -331,7 +344,7 @@ class RealTimePred:
         for res in results:
             x1, y1, x2, y2 = res['bbox'].astype(int)
             embeddings = res['embedding']
-            if res['det_score']< 0.7 : continue
+            if res['det_score']< 0.5 : continue
             person_name, person_role = ml_search_algorithm(dataframe,
                                                         feature_column,
                                                         test_vector=embeddings,
@@ -342,10 +355,10 @@ class RealTimePred:
         
 
             
-            if person_name not in seen_today:
+            #if person_name not in seen_today:
                 #self.send_sms(person_name, person_role,current_time)
                 #seen_today.add(person_name)
-                pass
+            #    pass
             if person_name == 'Unknown':
                 color =(0,0,255) # bgr
             else:

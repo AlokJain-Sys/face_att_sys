@@ -1,9 +1,11 @@
 from Home import face_rec ,st
 import re
+from utils import set_page_config
+
+set_page_config()
 
 
 
- 
 def validate_mobile(mobile):
     pattern = r"^\d{10}$"  # Assuming 10-digit mobile number
     return bool(re.match(pattern, mobile))

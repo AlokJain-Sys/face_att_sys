@@ -1,6 +1,10 @@
 import streamlit as st
 import pandas as pd
 from Home import face_rec  # Assuming you have face_rec.py
+from utils import set_page_config
+
+set_page_config()
+
 
 # --- Retrieve attendance data from Redis ---
 attendance_logs = face_rec.r.lrange('attendance:logs', 0, -1)

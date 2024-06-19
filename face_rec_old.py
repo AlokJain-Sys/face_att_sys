@@ -273,7 +273,7 @@ def ml_search_algorithm(dataframe,feature_column,test_vector,
 #we need to save logs for every 1 mins
 class RealTimePred:
     
-    def __init__(self, rtsp_url="rtsp://admin:ab@123456@122.160.10.254:554/Streaming/Channels/101"):
+    def __init__(self, rtsp_url="rtsp://admin:ab@123456@122.160.10.254/Streaming/Channels/101"):
         self.logs = dict(name=[], role=[], current_time=[])
         self.rtsp_url = rtsp_url  # Store the RTSP URL
         self.cap = cv2.VideoCapture(rtsp_url) # Get video feed from the RTSP URL

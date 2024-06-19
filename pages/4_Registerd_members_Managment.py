@@ -4,9 +4,9 @@ from streamlit_webrtc import webrtc_streamer
 import av
 import time
 import redis
+from utils import set_page_config
 
-# --- Redis Connection Setup ---
-#redis_client = redis.Redis(host='localhost', port=6379, db=0)  # Adjust if needed
+set_page_config()
 
 # --- Streamlit Page Structure ---
 st.title("Registerd Data Management")

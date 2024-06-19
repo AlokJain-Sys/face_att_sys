@@ -1,8 +1,9 @@
 from Home import st
 import pandas  as pd    
 from Home import face_rec
+from utils import set_page_config
 
-#st.set_page_config(page_title='Reporting',layout='wide')
+set_page_config()
 st.subheader('Reporting')
 
 #Retrive log data and show in Report.py 

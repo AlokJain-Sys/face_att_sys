@@ -4,6 +4,9 @@ from streamlit_webrtc import webrtc_streamer
 import av
 import time
 
+from utils import set_page_config
+
+set_page_config()# Loading Image using PIL
 
 st.subheader('Real-Time Prediction Attendance System')
 
@@ -13,14 +16,18 @@ with st.spinner('Retriving Data from Redis DB ...'):
     redis_face_db = face_rec.retrive_data2(name='contact1:register')
     st.dataframe(redis_face_db)
     
-st.success("Data sucessfully retrived from Redis")
+st.success("Data sucessfully retrived from DB")
 
 # time 
 waitTime = 30 # time in sec
 setTime = time.time()
-rtsp_url = "rtsp://admin:ab@123456@122.160.10.254:554/Streaming/Channels/101"
-realtimepred = face_rec.RealTimePred(rtsp_url) # real time prediction class
-
+rtsp_url = "rtsp://admin:ab@123456@122.160.10.254/Streaming/Channels/101"
+rtsp_url = ""
+if rtsp_url :
+    
+    realtimepred = face_rec.RealTimePred(rtsp_url) # real time prediction class
+else :
+    realtimepred = face_rec.RealTimePred() # real time prediction class
 # Real Time Prediction
 # streamlit webrtc
 # callback function
