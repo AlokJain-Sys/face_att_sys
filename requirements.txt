@@ -127,6 +127,8 @@ numpy==1.26.4
     #   tifffile
 onnx==1.16.1
     # via insightface
+onnxruntime
+
 opencv-contrib-python==4.10.0.84
     # via -r requirements.in
 opencv-python==4.10.0.84
